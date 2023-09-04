@@ -168,9 +168,9 @@ class targetFinder:
 		maps = maps[0]
 		for i in range(len(rank_targets)):
 				[check_neighbor, x_s, y_s, x_e, y_e] = self.neighbors(self.target_window+safety_net, rank_targets[i][0][0]+self.target_window//2, rank_targets[i][0][1]+self.target_window//2, maps, width, height)
-				if not any(-1 in n for n in check_neighbor):
-					best_targets.append([[x_s+safety_net//2, y_s+safety_net//2], [x_e-safety_net//2, y_e-safety_net//2]])
-					break
+
+				best_targets.append([[x_s+safety_net//2, y_s+safety_net//2], [x_e-safety_net//2, y_e-safety_net//2]])
+				# break
 
 		
 		return best_targets
@@ -346,8 +346,8 @@ def get_safe_targets(target_finder, clearance, frontier_clearance, safety_net, m
 	all_targets = target_finder.get_targets(clearance, frontier_clearance, maps, width, height)
 	ranked_targets = target_finder.rank_targets(all_targets,map_array)
 	# max_indices = target_finder.rank_targets(maps,all_targets, width, height)
-	# safe_targets = target_finder.get_best_targets(all_targets, max_indices, safety_net, maps, width, height)
-	bot1_target,bot2_target,bot3_target = target_finder.split_targets(all_targets)
+	safe_targets = target_finder.best_targets(all_targets, safety_net, maps, width, height)
+	bot1_target,bot2_target,bot3_target = target_finder.split_targets(safe_targets)
 
 	return bot1_target,bot2_target,bot3_target
 
@@ -388,7 +388,7 @@ if __name__ == '__main__':
 			first_bot,second_bot,third_bot = get_safe_targets(target_finder, clearance, frontier_clearance, safety_net, maps, width, height)
 
 			# print("first_bot",first_bot,"third_bot",third_bot,"second_bot",second_bot)
-			# print(len(first_bot),len(second_bot),len(third_bot))
+			print(len(first_bot),len(second_bot),len(third_bot))
 			end = rospy.Time.now()
 
 			print("Total Time. {}".format(end - start))
@@ -453,7 +453,7 @@ if __name__ == '__main__':
 
 			if len(targets)>0 and mapdata.if_send_new_goal:
 					print("here")
-					# print("Goal targets, %r" % multi_targets_msg)
+					print("Goal targets, %r" % targets)
 					mapdata.send_new_goal(targets)
 
 					# resetting the parameters
